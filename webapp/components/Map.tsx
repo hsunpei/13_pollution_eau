@@ -126,7 +126,7 @@ export default function Map() {
                     paint: {
                       "line-color": regionBorderColor,
                       "line-width": regionBorderWidth,
-                      "line-dasharray": regionDashline ? [2, 3] : undefined,
+                      ...(regionDashline && { "line-dasharray": [2, 3] }),
                     },
                   } satisfies maplibregl.LayerSpecification,
                 ]
