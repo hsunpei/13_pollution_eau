@@ -7,14 +7,14 @@ import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Protocol } from "pmtiles";
 import layers from 'protomaps-themes-base';
-import { useControls } from 'leva'
+import { Leva, useControls } from 'leva'
 
 const SOURCE = "protomaps";
 
 export default function Map() {
   // controls from Leva is a library for adding a GUI to help us try out different styles.
   // we're going to discard it once designers make a decision on the map style
-  const { theme, language, countryBorderWidth } = useControls(
+  const { theme, language, customizeCountryBorders, countryBorderWidth } = useControls(
      {
       theme:{
         options: ['light', 'dark', 'white', 'grayscale', 'black'],
@@ -24,11 +24,15 @@ export default function Map() {
         options: ['en', 'fr'],
         value: 'fr',
       },
+      customizeCountryBorders: {
+        value: true,
+      },
       countryBorderWidth: {
         value: 3,
         min: 1,
         max: 8,
         step: 1,
+        render: (get) => get('customizeCountryBorders')
       },
     });
 
@@ -40,9 +44,12 @@ export default function Map() {
     };
   }, []);
 
+  console.log('layers(SOURCE, "white", "en")', layers(SOURCE, "white", "en"))
+
 
   return (
-      <ReactMapGl
+    <>
+<ReactMapGl
         style={{width: "100%", height: "90vh"}}
         mapStyle={{
           version: 8,
@@ -58,9 +65,12 @@ export default function Map() {
           },
           layers: [
             ...layers(SOURCE, theme, language).filter(
-              (layer) => !["boundaries_country", "places_region"].includes(layer.id)
+              (layer) => ![
+                customizeCountryBorders ? "boundaries_country" : undefined,
+                "places_region"
+              ].includes(layer.id)
             ),
-            {
+            ...(customizeCountryBorders ? [{
                 "id": "boundaries_country",
                 "type": "line",
                 "source": SOURCE,
@@ -70,7 +80,7 @@ export default function Map() {
                   "line-color": "#999",
                   "line-width": countryBorderWidth,
                 }
-            },
+            } satisfies maplibregl.LayerSpecification] : []),
             {
               "id": "places_region",
               "type": "line",
@@ -92,5 +102,11 @@ export default function Map() {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         mapLib={maplibregl as any}
       />
+      {/* TODO: remove this once the design decision is made */}
+      <Leva
+        oneLineLabels
+      />
+    </>
+      
   );
 }
