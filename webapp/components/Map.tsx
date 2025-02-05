@@ -14,7 +14,16 @@ const SOURCE = "protomaps";
 export default function Map() {
   // controls from Leva is a library for adding a GUI to help us try out different styles.
   // we're going to discard it once designers make a decision on the map style
-  const { theme, language, customizeCountryBorders, countryBorderWidth } = useControls(
+  const { 
+    theme,
+    language,
+    customizeCountryBorders,
+    countryBorderWidth,
+    countryBorderColor,
+    customizeRegionBorders,
+    countryRegionBorderWidth,
+    countryRegionBorderColor,
+  } = useControls(
      {
       theme:{
         options: ['light', 'dark', 'white', 'grayscale', 'black'],
@@ -30,10 +39,22 @@ export default function Map() {
       countryBorderWidth: {
         value: 3,
         min: 1,
+        max: 10,
+        step: 1,
+        render: (get) => get('customizeCountryBorders')
+      },
+      countryBorderColor: "#bdb8b8",
+      customizeRegionBorders: {
+        value: true,
+      },
+      countryRegionBorderWidth: {
+        value: 1,
+        min: 1,
         max: 8,
         step: 1,
         render: (get) => get('customizeCountryBorders')
       },
+      countryRegionBorderColor: "#d7d7d7",
     });
 
   useEffect(() => {
@@ -46,10 +67,9 @@ export default function Map() {
 
   console.log('layers(SOURCE, "white", "en")', layers(SOURCE, "white", "en"))
 
-
   return (
     <>
-<ReactMapGl
+      <ReactMapGl
         style={{width: "100%", height: "90vh"}}
         mapStyle={{
           version: 8,
@@ -67,7 +87,7 @@ export default function Map() {
             ...layers(SOURCE, theme, language).filter(
               (layer) => ![
                 customizeCountryBorders ? "boundaries_country" : undefined,
-                "places_region"
+                customizeRegionBorders ? "places_region" : undefined,
               ].includes(layer.id)
             ),
             ...(customizeCountryBorders ? [{
@@ -77,21 +97,21 @@ export default function Map() {
                 "source-layer": "boundaries",
                 "filter": ['<=', 'kind_detail', 2],
                 paint: {
-                  "line-color": "#999",
+                  "line-color": countryBorderColor,
                   "line-width": countryBorderWidth,
                 }
             } satisfies maplibregl.LayerSpecification] : []),
-            {
+            ...(customizeRegionBorders ? [{
               "id": "places_region",
               "type": "line",
               "source": SOURCE,
               "source-layer": "boundaries",
               "filter": ['==', 'kind', 'region'],
               paint: {
-                "line-color": "#aaaaa0",
-                "line-width": 1
+                "line-color": countryRegionBorderColor,
+                "line-width": countryRegionBorderWidth,
               }
-            }
+            } satisfies maplibregl.LayerSpecification] : []),
           ]
       }}
         initialViewState={{
