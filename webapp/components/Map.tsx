@@ -14,7 +14,7 @@ const SOURCE = "protomaps";
 export default function Map() {
   // controls from Leva is a library for adding a GUI to help us try out different styles.
   // we're going to discard it once designers make a decision on the map style
-  const { theme, language } = useControls(
+  const { theme, language, countryBorderWidth } = useControls(
      {
       theme:{
         options: ['light', 'dark', 'white', 'grayscale', 'black'],
@@ -23,6 +23,12 @@ export default function Map() {
       language:{
         options: ['en', 'fr'],
         value: 'fr',
+      },
+      countryBorderWidth: {
+        value: 3,
+        min: 1,
+        max: 8,
+        step: 1,
       },
     });
 
@@ -62,7 +68,7 @@ export default function Map() {
                 "filter": ['<=', 'kind_detail', 2],
                 paint: {
                   "line-color": "#999",
-                  "line-width": 2
+                  "line-width": countryBorderWidth,
                 }
             },
             {
