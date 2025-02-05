@@ -7,10 +7,21 @@ import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Protocol } from "pmtiles";
 import layers from 'protomaps-themes-base';
+import { useControls } from 'leva'
 
 const SOURCE = "protomaps";
 
 export default function Map() {
+  // controls from Leva is a library for adding a GUI to help us try out different styles.
+  // we're going to discard it once designers make a decision on the map style
+  const { theme } = useControls(
+     {
+      theme:{
+        options: ['light', 'dark', 'white', 'grayscale', 'black'],
+        value: 'white',
+      }
+    });
+
   useEffect(() => {
     const protocol = new Protocol();
     maplibregl.addProtocol("pmtiles", protocol.tile);
@@ -18,6 +29,7 @@ export default function Map() {
       maplibregl.removeProtocol("pmtiles");
     };
   }, []);
+
 
   return (
       <ReactMapGl
@@ -35,7 +47,7 @@ export default function Map() {
             },
           },
           layers: [
-            ...layers(SOURCE, "white", "en").filter(
+            ...layers(SOURCE, theme, "en").filter(
               (layer) => !["boundaries_country", "places_region"].includes(layer.id)
             ),
             {
