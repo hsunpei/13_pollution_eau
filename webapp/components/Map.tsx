@@ -21,8 +21,9 @@ export default function Map() {
     countryBorderWidth,
     countryBorderColor,
     customizeRegionBorders,
-    countryRegionBorderWidth,
-    countryRegionBorderColor,
+    regionBorderWidth,
+    regionBorderColor,
+    regionDashline,
   } = useControls(
      {
       theme:{
@@ -33,6 +34,7 @@ export default function Map() {
         options: ['en', 'fr'],
         value: 'fr',
       },
+      // country
       customizeCountryBorders: {
         value: true,
       },
@@ -44,17 +46,22 @@ export default function Map() {
         render: (get) => get('customizeCountryBorders')
       },
       countryBorderColor: "#bdb8b8",
+      // region
       customizeRegionBorders: {
         value: true,
       },
-      countryRegionBorderWidth: {
-        value: 1,
+      regionBorderWidth: {
+        value: 2,
         min: 1,
         max: 8,
         step: 1,
-        render: (get) => get('customizeCountryBorders')
+        render: (get) => get('customizeRegionBorders')
       },
-      countryRegionBorderColor: "#d7d7d7",
+      regionBorderColor: "#d7d7d7",
+      regionDashline: {
+        value: true,
+        render: (get) => get('customizeRegionBorders')
+      }
     });
 
   useEffect(() => {
@@ -108,8 +115,9 @@ export default function Map() {
               "source-layer": "boundaries",
               "filter": ['==', 'kind', 'region'],
               paint: {
-                "line-color": countryRegionBorderColor,
-                "line-width": countryRegionBorderWidth,
+                "line-color": regionBorderColor,
+                "line-width": regionBorderWidth,
+                "line-dasharray": regionDashline ? [2, 3] : undefined,
               }
             } satisfies maplibregl.LayerSpecification] : []),
           ]
