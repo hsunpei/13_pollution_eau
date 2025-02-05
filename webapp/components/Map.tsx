@@ -136,10 +136,9 @@ export default function Map() {
         initialViewState={{
           longitude: 2.213749,
           latitude: 46.227638,
-          zoom: 6,
+          zoom: 5,
         }}
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        mapLib={maplibregl as any}
+        mapLib={maplibregl}
       />
       {/* TODO: remove this once the design decision is made */}
       <Leva oneLineLabels />
