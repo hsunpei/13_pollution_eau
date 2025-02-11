@@ -1,7 +1,13 @@
 //import Image from "next/image";
 import Map from "@/components/Map";
+import { promises as fs } from 'fs';
 
-export default function Home() {
+export default async function Home() {
+  const file = await fs.readFile(process.cwd() + '/data/communes-version-simplifiee.geojson', 'utf8');
+  const data = JSON.parse(file);
+
+  console.log('***data', data)
+
   return (
     <div className="flex flex-col min-h-screen">
       <header className="p-4 bg-blue-700 text-white">
@@ -11,7 +17,7 @@ export default function Home() {
       </header>
 
       <main className="flex-1">
-        <Map />
+        <Map data={data} />
       </main>
 
       <footer className="p-4 bg-gray-100 text-center text-sm">

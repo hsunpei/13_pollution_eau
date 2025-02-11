@@ -11,7 +11,11 @@ import { Leva, useControls } from "leva";
 
 const SOURCE = "protomaps";
 
-export default function Map() {
+interface MapProps {
+  data?: any;
+}
+
+export default function Map({data}: MapProps) {
   // controls from Leva is a library for adding a GUI to help us try out different styles.
   // we're going to discard it once designers make a decision on the map style
   const {
@@ -73,6 +77,8 @@ export default function Map() {
 
   console.log('layers(SOURCE, "white", "en")', layers(SOURCE, "white", "en"));
 
+  console.log('data', data);
+
   return (
     <>
       <ReactMapGl
@@ -91,6 +97,10 @@ export default function Map() {
               attribution:
                 '<a href="https://osm.org/copyright">© OpenStreetMap</a>',
             },
+            commune: {
+              type: "geojson",
+              data: data,
+            }
           },
           layers: [
             ...layers(SOURCE, theme, language).filter(
@@ -131,6 +141,16 @@ export default function Map() {
                   } satisfies maplibregl.LayerSpecification,
                 ]
               : []),
+              {
+                'id': 'commune',
+            'type': 'fill',
+            'source': 'commune',
+            'layout': {},
+            'paint': {
+                'fill-color': '#088',
+                'fill-opacity': 0.8
+            }
+              }
           ],
         }}
         initialViewState={{
