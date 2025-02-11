@@ -87,7 +87,7 @@ export default function Map({data}: MapProps) {
                 if (e.features && e.features.length > 0) {
                     console.log('e.features', e.features);
 
-                    if (hoveredCommuneRef.current !== null && hoveredCommuneRef.current) {
+                    if (hoveredCommuneRef.current !== null && typeof hoveredCommuneRef.current !== 'undefined') {
                         // clear previous hovered state
                         map.setFeatureState(
                             {source: 'commune', id: hoveredCommuneRef.current},
@@ -95,7 +95,7 @@ export default function Map({data}: MapProps) {
                         );
                     }
                     const hoveredCommune = e.features[0].id;
-                    if (hoveredCommune) {
+                    if (typeof hoveredCommune !== 'undefined') {
                         hoveredCommuneRef.current = hoveredCommune;
                         map.setFeatureState(
                             {source: 'commune', id: hoveredCommune},
@@ -106,12 +106,13 @@ export default function Map({data}: MapProps) {
             });
 
             map.on('mouseleave', 'commune', (e) => {
-                if (hoveredCommuneRef.current !== null) {
+                if (typeof hoveredCommuneRef.current !== 'undefined') {
                     // clear previous hovered state
                     map.setFeatureState(
                         {source: 'commune', id: hoveredCommuneRef.current},
                         {hover: false}
                     );
+                    hoveredCommuneRef.current = undefined;
                 }
             });
         }
