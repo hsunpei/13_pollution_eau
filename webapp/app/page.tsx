@@ -5,8 +5,15 @@ import { promises as fs } from 'fs';
 export default async function Home() {
   const file = await fs.readFile(process.cwd() + '/data/communes-version-simplifiee.geojson', 'utf8');
   const data = JSON.parse(file);
-
-  console.log('***data', data)
+  const geoData = {
+    ...data,
+    features: data.features.map((feature: { properties: { code: unknown; }; }) => {
+      return {
+        ...feature,
+        id: feature.properties.code,
+      };
+    }),
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -17,7 +24,7 @@ export default async function Home() {
       </header>
 
       <main className="flex-1">
-        <Map data={data} />
+        <Map data={geoData} />
       </main>
 
       <footer className="p-4 bg-gray-100 text-center text-sm">
