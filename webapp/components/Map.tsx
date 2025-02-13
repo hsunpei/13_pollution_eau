@@ -10,6 +10,8 @@ import layers from "protomaps-themes-base";
 import {Leva, useControls} from "leva";
 
 const SOURCE = "protomaps";
+const OVERLAY_SOURCE = "departements";
+const OVERLAY_LAYER = "departement-layer";
 
 interface MapProps {
     data?: any;
@@ -17,7 +19,7 @@ interface MapProps {
 
 export default function Map({data}: MapProps) {
     const mapRef = useRef<MapRef>(null);
-    const hoveredCommuneRef = useRef<number | string | undefined>(undefined);
+    const hoveredElementRef = useRef<number | string | undefined>(undefined);
 
     // controls from Leva is a library for adding a GUI to help us try out different styles.
     // we're going to discard it once designers make a decision on the map style
@@ -83,36 +85,36 @@ export default function Map({data}: MapProps) {
         const map = mapRef.current;
 
         if (map) {
-            map.on('mousemove', 'commune', (e) => {
+            map.on('mousemove', OVERLAY_LAYER, (e) => {
                 if (e.features && e.features.length > 0) {
                     console.log('e.features', e.features);
 
-                    if (hoveredCommuneRef.current !== null && typeof hoveredCommuneRef.current !== 'undefined') {
+                    if (hoveredElementRef.current !== null && typeof hoveredElementRef.current !== 'undefined') {
                         // clear previous hovered state
                         map.setFeatureState(
-                            {source: 'commune', id: hoveredCommuneRef.current},
+                            {source: OVERLAY_SOURCE, id: hoveredElementRef.current, sourceLayer: OVERLAY_SOURCE},
                             {hover: false}
                         );
                     }
-                    const hoveredCommune = e.features[0].id;
-                    if (typeof hoveredCommune !== 'undefined') {
-                        hoveredCommuneRef.current = hoveredCommune;
+                    const hoveredId = e.features[0].id;
+                    if (typeof hoveredId !== 'undefined') {
+                        hoveredElementRef.current = hoveredId;
                         map.setFeatureState(
-                            {source: 'commune', id: hoveredCommune},
+                            {source: OVERLAY_SOURCE, id: hoveredId, sourceLayer: OVERLAY_SOURCE},
                             {hover: true}
                         );
                     }
                 }
             });
 
-            map.on('mouseleave', 'commune', (e) => {
-                if (typeof hoveredCommuneRef.current !== 'undefined') {
+            map.on('mouseleave', OVERLAY_LAYER, (e) => {
+                if (typeof hoveredElementRef.current !== 'undefined') {
                     // clear previous hovered state
                     map.setFeatureState(
-                        {source: 'commune', id: hoveredCommuneRef.current},
+                        {source: OVERLAY_SOURCE, id: hoveredElementRef.current, sourceLayer: OVERLAY_SOURCE},
                         {hover: false}
                     );
-                    hoveredCommuneRef.current = undefined;
+                    hoveredElementRef.current = undefined;
                 }
             });
         }
@@ -141,9 +143,9 @@ export default function Map({data}: MapProps) {
                             attribution:
                                 '<a href="https://osm.org/copyright">© OpenStreetMap</a>',
                         },
-                        commune: {
-                            type: "geojson",
-                            data,
+                        [OVERLAY_SOURCE]: {
+                            type: "vector",
+                            url: "pmtiles://departements.pmtiles",
                         }
                     },
                     layers: [
@@ -198,9 +200,10 @@ export default function Map({data}: MapProps) {
                 }}
             >
                 <Layer
-                    id="commune"
+                    id={OVERLAY_LAYER}
                     type="fill"
-                    source="commune"
+                    source={OVERLAY_SOURCE}
+                    source-layer={OVERLAY_SOURCE}
                     paint={{
                         'fill-color': '#088',
                         'fill-opacity': [
