@@ -13,11 +13,7 @@ const SOURCE = "protomaps";
 const OVERLAY_SOURCE = "departements";
 const OVERLAY_LAYER = "departement-layer";
 
-interface MapProps {
-    data?: any;
-}
-
-export default function Map({data}: MapProps) {
+export default function Map() {
     const mapRef = useRef<MapRef>(null);
     const hoveredElementRef = useRef<number | string | undefined>(undefined);
 
@@ -119,9 +115,6 @@ export default function Map({data}: MapProps) {
             });
         }
     }, []);
-
-    console.log('layers(SOURCE, "white", "en")', layers(SOURCE, "white", "en"));
-    console.log('data', data);
 
     return (
         <>
