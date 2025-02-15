@@ -103,7 +103,7 @@ export default function Map() {
                 }
             });
 
-            map.on('mouseleave', OVERLAY_LAYER, (e) => {
+            map.on('mouseleave', OVERLAY_LAYER, () => {
                 if (typeof hoveredElementRef.current !== 'undefined') {
                     // clear previous hovered state
                     map.setFeatureState(
