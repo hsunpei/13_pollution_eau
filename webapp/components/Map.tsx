@@ -10,8 +10,8 @@ import layers from "protomaps-themes-base";
 import {Leva, useControls} from "leva";
 
 const SOURCE = "protomaps";
-const OVERLAY_SOURCE = "departements";
-const OVERLAY_LAYER = "departement-layer";
+const OVERLAY_SOURCE = "communes";
+const OVERLAY_LAYER = "communes-layer";
 
 export default function Map() {
     const mapRef = useRef<MapRef>(null);
@@ -138,7 +138,7 @@ export default function Map() {
                         },
                         [OVERLAY_SOURCE]: {
                             type: "vector",
-                            url: "pmtiles://departements.pmtiles",
+                            url: "pmtiles://communes.pmtiles",
                         }
                     },
                     layers: [
