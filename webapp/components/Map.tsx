@@ -34,7 +34,7 @@ export default function Map() {
           sources: {
             protomaps: {
               type: "vector",
-              maxzoom: 15,
+              maxzoom: MAPLIBRE_MAP.protomaps.maxzoom,
               url: `https://api.protomaps.com/tiles/v4.json?key=${MAPLIBRE_MAP.protomaps.api_key}`,
               attribution:
                 '<a href="https://osm.org/copyright">© OpenStreetMap</a>',
