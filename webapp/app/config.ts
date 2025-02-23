@@ -1,7 +1,7 @@
 export const MAPLIBRE_MAP = {
   protomaps: {
     // https://protomaps.com/api
-    api_key: "707d8bc70b393fc0",
+    api_key: process.env.NEXT_PUBLIC_PROTOMAPS_API_KEY || "",
     maxzoom: 15,
     theme: "white",
     language: "fr",
