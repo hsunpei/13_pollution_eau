@@ -6,6 +6,11 @@ export const MAPLIBRE_MAP = {
     theme: "white",
     language: "fr",
   },
+  initialViewState: {
+    longitude: 2.213749,
+    latitude: 46.227638,
+    zoom: 5,
+  },
   countryBorderWidth: 2,
   countryBorderColor: "#bdb8b8",
 };

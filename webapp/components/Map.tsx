@@ -59,11 +59,7 @@ export default function Map() {
             } satisfies maplibregl.LayerSpecification,
           ],
         }}
-        initialViewState={{
-          longitude: 2.213749,
-          latitude: 46.227638,
-          zoom: 5,
-        }}
+        initialViewState={MAPLIBRE_MAP.initialViewState}
         mapLib={maplibregl}
       />
     </>
