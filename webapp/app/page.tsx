@@ -3,15 +3,15 @@ import Map from "@/components/Map";
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen w-screen h-screen">
       <header className="p-4 bg-blue-700 text-white">
         <h1 className="text-2xl font-bold">
           Pollution de l&apos;Eau Potable en France
         </h1>
       </header>
 
-      <main className="flex-1">
-        <Map style={{ width: "100%", height: "90vh" }} />
+      <main className="flex-1 w-full h-full">
+        <Map />
       </main>
 
       <footer className="p-4 bg-gray-100 text-center text-sm">

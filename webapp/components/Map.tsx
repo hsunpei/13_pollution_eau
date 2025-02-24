@@ -11,11 +11,7 @@ import { MAPLIBRE_MAP } from "@/app/config";
 
 const SOURCE = "protomaps";
 
-interface MapProps {
-  style?: React.CSSProperties;
-}
-
-export default function Map({ style }: MapProps) {
+export default function Map() {
   useEffect(() => {
     // adds the support for PMTiles
     const protocol = new Protocol();
@@ -27,7 +23,7 @@ export default function Map({ style }: MapProps) {
 
   return (
     <ReactMapGl
-      style={style}
+      style={{ width: "100%", height: "100%" }} 
       mapStyle={{
         version: 8,
         glyphs:
