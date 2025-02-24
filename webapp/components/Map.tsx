@@ -23,7 +23,7 @@ export default function Map() {
 
   return (
     <ReactMapGl
-      style={{ width: "100%", height: "100%" }} 
+      style={{ width: "100%", height: "100%" }}
       mapStyle={{
         version: 8,
         glyphs:
