@@ -11,7 +11,7 @@ export default function Home() {
       </header>
 
       <main className="flex-1">
-        <Map />
+        <Map style={{ width: "100%", height: "90vh" }} />
       </main>
 
       <footer className="p-4 bg-gray-100 text-center text-sm">
