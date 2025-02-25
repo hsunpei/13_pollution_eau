@@ -1,5 +1,6 @@
 //import Image from "next/image";
 import { MapExplorer } from "@/components/MapExplorer";
+import { ResizableWrapper } from "@/components/ResizableWrapper";
 
 export default function Home() {
   return (
@@ -10,8 +11,10 @@ export default function Home() {
         </h1>
       </header>
 
-      <main className="flex-1 w-full">
-        <MapExplorer />
+      <main className="relative flex-1 w-full">
+        <ResizableWrapper>
+          <MapExplorer />
+        </ResizableWrapper>
       </main>
 
       <footer className="p-4 bg-gray-100 text-center text-sm">
