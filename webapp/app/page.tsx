@@ -1,7 +1,7 @@
 //import Image from "next/image";
 import Map from "@/components/Map";
 
-export default function Home() {
+export default async function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       <header className="p-4 bg-blue-700 text-white">
