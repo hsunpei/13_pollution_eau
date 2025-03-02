@@ -139,6 +139,8 @@ export default function Map() {
                         [OVERLAY_SOURCE]: {
                             type: "vector",
                             url: "pmtiles://communes.pmtiles",
+                            // set the feature id as the commune code
+                            promoteId: 'commune_code_insee'
                         }
                     },
                     layers: [
