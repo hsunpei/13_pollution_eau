@@ -8,12 +8,17 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import {Protocol} from "pmtiles";
 import layers from "protomaps-themes-base";
 import {Leva, useControls} from "leva";
+import { Prelevement } from "@/types/prelevement";
 
 const SOURCE = "protomaps";
 const OVERLAY_SOURCE = "communes";
 const OVERLAY_LAYER = "communes-layer";
 
-export default function Map() {
+interface MapProps {
+  pollutionData: Map<string, Prelevement>;
+}
+
+export default function Map({pollutionData}: MapProps) {
     const mapRef = useRef<MapRef>(null);
     const hoveredElementRef = useRef<number | string | undefined>(undefined);
 
@@ -116,6 +121,14 @@ export default function Map() {
         }
     }, []);
 
+    const matchExpression = ['match', ['get', 'commune_code_insee']];
+    for (const [key, value] of Object.entries(pollutionData)) {
+        const color = value['2024'] === 'N' ? '#ff6361' : 'rgba(0, 0, 0, 0)'; 
+        matchExpression.push(key, color);
+    }
+    // Last value is the default, used where there is no data
+    matchExpression.push('rgba(0, 0, 0, 0)');
+
     return (
         <>
             <ReactMapGl
@@ -194,7 +207,7 @@ export default function Map() {
                     console.log(e);
                 }}
             >
-                <Layer
+                {/* <Layer
                     id={OVERLAY_LAYER}
                     type="fill"
                     source={OVERLAY_SOURCE}
@@ -204,13 +217,23 @@ export default function Map() {
                         'fill-opacity': [
                             'case',
                             ['boolean', ['feature-state', 'hover'], false],
-                            1,
-                            0.5
+                            0.8,
+                            0.2
                         ]
                     }}
+                /> */}
+                <Layer
+                  id={OVERLAY_LAYER}
+                  type="fill"
+                  source={OVERLAY_SOURCE}
+                  source-layer={OVERLAY_SOURCE}
+                  paint={{
+                    'fill-color': matchExpression as maplibregl.ExpressionSpecification,
+                    'fill-opacity': 0.8
+                  }}
                 />
-
             </ReactMapGl>
+            
             {/* TODO: remove this once the design decision is made */}
             <Leva oneLineLabels/>
         </>
