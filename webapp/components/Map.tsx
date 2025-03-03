@@ -2,14 +2,12 @@
 
 import { useEffect } from "react";
 
-import ReactMapGl from "react-map-gl/maplibre";
+import ReactMapGl, { MapLayerMouseEvent } from "react-map-gl/maplibre";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Protocol } from "pmtiles";
 import layers from "protomaps-themes-base";
 import { MAPLIBRE_MAP } from "@/app/config";
-
-const SOURCE = "protomaps";
 
 export default function Map() {
   useEffect(() => {
@@ -20,6 +18,12 @@ export default function Map() {
       maplibregl.removeProtocol("pmtiles");
     };
   }, []);
+
+  function onClick(event: MapLayerMouseEvent) {
+    if (event.features && event.features.length > 0) {
+      console.log("Properties:", event.features[0].properties);
+    }
+  }
 
   return (
     <ReactMapGl
@@ -37,28 +41,38 @@ export default function Map() {
             attribution:
               '<a href="https://osm.org/copyright">© OpenStreetMap</a>',
           },
+          polluants: {
+            type: "vector",
+            url: "pmtiles://s3/upload/datacommunes.pmtiles",
+          },
         },
         layers: [
           ...layers(
-            SOURCE,
+            "protomaps",
             MAPLIBRE_MAP.protomaps.theme,
             MAPLIBRE_MAP.protomaps.language,
           ).filter((layer) => !["boundaries_country"].includes(layer.id)),
           {
-            id: "boundaries_country",
-            type: "line",
-            source: SOURCE,
-            "source-layer": "boundaries",
-            filter: ["<=", "kind_detail", 2],
+            id: "polluants",
+            type: "fill",
+            source: "polluants",
+            "source-layer": "datacommunes",
             paint: {
-              "line-color": MAPLIBRE_MAP.countryBorderColor,
-              "line-width": MAPLIBRE_MAP.countryBorderWidth,
+              "fill-color": [
+                "case",
+                [">", ["to-number", ["get", "commune_code_insee"]], 30000],
+                "#ff0000", // Red for commune_code_insee > 30000
+                "#00ff00", // Green for commune_code_insee <= 30000
+              ],
+              "fill-opacity": 0.5,
             },
-          } satisfies maplibregl.LayerSpecification,
+          },
         ],
       }}
       initialViewState={MAPLIBRE_MAP.initialViewState}
       mapLib={maplibregl}
+      onClick={onClick}
+      interactiveLayerIds={["polluants"]}
     />
   );
 }
