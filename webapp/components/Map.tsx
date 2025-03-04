@@ -9,6 +9,7 @@ import {Protocol} from "pmtiles";
 import layers from "protomaps-themes-base";
 import {Leva, useControls} from "leva";
 import { Prelevement } from "@/types/prelevement";
+import { getRegionColor } from "@/utils/getRegionColor";
 
 const SOURCE = "protomaps";
 const OVERLAY_SOURCE = "communes";
@@ -123,7 +124,7 @@ export default function Map({pollutionData}: MapProps) {
 
     const matchExpression = ['match', ['get', 'commune_code_insee']];
     for (const [communeId, value] of Object.entries(pollutionData)) {
-        const color = value['2024'] === 'N' ? '#ff6361' : 'rgba(0, 0, 0, 0)'; 
+        const color = getRegionColor(value['2024']); 
         matchExpression.push(communeId, color);
     }
     // Last value is the default, used where there is no data
