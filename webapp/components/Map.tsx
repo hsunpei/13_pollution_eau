@@ -26,6 +26,7 @@ export default function Map({pollutionData}: MapProps) {
     // controls from Leva is a library for adding a GUI to help us try out different styles.
     // we're going to discard it once designers make a decision on the map style
     const {
+        year,
         theme,
         language,
         customizeCountryBorders,
@@ -36,6 +37,10 @@ export default function Map({pollutionData}: MapProps) {
         regionBorderColor,
         regionDashline,
     } = useControls({
+        year: {
+            options: ["2020", "2021", "2022", "2023", "2024"],
+            value: "2024",
+        },
         theme: {
             options: ["light", "dark", "white", "grayscale", "black"],
             value: "white",
@@ -124,7 +129,7 @@ export default function Map({pollutionData}: MapProps) {
 
     const matchExpression = ['match', ['get', 'commune_code_insee']];
     for (const [communeId, value] of Object.entries(pollutionData)) {
-        const color = getRegionColor(value['2024']); 
+        const color = getRegionColor(value[year]); 
         matchExpression.push(communeId, color);
     }
     // Last value is the default, used where there is no data
