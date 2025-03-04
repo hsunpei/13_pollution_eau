@@ -122,9 +122,9 @@ export default function Map({pollutionData}: MapProps) {
     }, []);
 
     const matchExpression = ['match', ['get', 'commune_code_insee']];
-    for (const [key, value] of Object.entries(pollutionData)) {
+    for (const [communeId, value] of Object.entries(pollutionData)) {
         const color = value['2024'] === 'N' ? '#ff6361' : 'rgba(0, 0, 0, 0)'; 
-        matchExpression.push(key, color);
+        matchExpression.push(communeId, color);
     }
     // Last value is the default, used where there is no data
     matchExpression.push('rgba(0, 0, 0, 0)');
@@ -132,106 +132,96 @@ export default function Map({pollutionData}: MapProps) {
     return (
         <>
             <ReactMapGl
-                ref={mapRef}
-                onLoad={onMapLoad}
-                style={{width: "100%", height: "90vh"}}
-                mapStyle={{
-                    version: 8,
-                    glyphs:
-                        "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
-                    sprite:
-                        "https://protomaps.github.io/basemaps-assets/sprites/v4/light",
-                    sources: {
-                        protomaps: {
-                            type: "vector",
-                            maxzoom: 15,
-                            url: "https://api.protomaps.com/tiles/v4.json?key=707d8bc70b393fc0",
-                            attribution:
-                                '<a href="https://osm.org/copyright">© OpenStreetMap</a>',
+              ref={mapRef}
+              onLoad={onMapLoad}
+              style={{width: "100%", height: "90vh"}}
+              mapStyle={{
+                version: 8,
+                glyphs:
+                  "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
+                sprite:
+                  "https://protomaps.github.io/basemaps-assets/sprites/v4/light",
+                sources: {
+                  protomaps: {
+                    type: "vector",
+                    maxzoom: 15,
+                    url: "https://api.protomaps.com/tiles/v4.json?key=707d8bc70b393fc0",
+                    attribution:
+                      '<a href="https://osm.org/copyright">© OpenStreetMap</a>',
+                  },
+                  [OVERLAY_SOURCE]: {
+                    type: "vector",
+                    url: "pmtiles://communes.pmtiles",
+                    // set the feature id as the commune code
+                    promoteId: 'commune_code_insee'
+                  }
+                },
+                layers: [
+                  ...layers(SOURCE, theme, language).filter(
+                    (layer) =>
+                      ![
+                        customizeCountryBorders ? "boundaries_country" : undefined,
+                        customizeRegionBorders ? "places_region" : undefined,
+                      ].includes(layer.id),
+                  ),
+                  ...(customizeCountryBorders
+                    ? [
+                      {
+                        id: "boundaries_country",
+                        type: "line",
+                        source: SOURCE,
+                        "source-layer": "boundaries",
+                        filter: ["<=", "kind_detail", 2],
+                        paint: {
+                          "line-color": countryBorderColor,
+                          "line-width": countryBorderWidth,
                         },
-                        [OVERLAY_SOURCE]: {
-                            type: "vector",
-                            url: "pmtiles://communes.pmtiles",
-                            // set the feature id as the commune code
-                            promoteId: 'commune_code_insee'
-                        }
-                    },
-                    layers: [
-                        ...layers(SOURCE, theme, language).filter(
-                            (layer) =>
-                                ![
-                                    customizeCountryBorders ? "boundaries_country" : undefined,
-                                    customizeRegionBorders ? "places_region" : undefined,
-                                ].includes(layer.id),
-                        ),
-                        ...(customizeCountryBorders
-                            ? [
-                                {
-                                    id: "boundaries_country",
-                                    type: "line",
-                                    source: SOURCE,
-                                    "source-layer": "boundaries",
-                                    filter: ["<=", "kind_detail", 2],
-                                    paint: {
-                                        "line-color": countryBorderColor,
-                                        "line-width": countryBorderWidth,
-                                    },
-                                } satisfies maplibregl.LayerSpecification,
-                            ]
-                            : []),
-                        ...(customizeRegionBorders
-                            ? [
-                                {
-                                    id: "places_region",
-                                    type: "line",
-                                    source: SOURCE,
-                                    "source-layer": "boundaries",
-                                    filter: ["==", "kind", "region"],
-                                    paint: {
-                                        "line-color": regionBorderColor,
-                                        "line-width": regionBorderWidth,
-                                        ...(regionDashline && {"line-dasharray": [2, 3]}),
-                                    },
-                                } satisfies maplibregl.LayerSpecification,
-                            ]
-                            : []),
-                    ],
-                }}
-                initialViewState={{
-                    longitude: 2.213749,
-                    latitude: 46.227638,
-                    zoom: 5,
-                }}
-                mapLib={maplibregl}
-                onClick={(e) => {
-                    console.log(e);
-                }}
+                      } satisfies maplibregl.LayerSpecification,
+                    ]
+                    : []),
+                  ...(customizeRegionBorders
+                    ? [
+                      {
+                        id: "places_region",
+                        type: "line",
+                        source: SOURCE,
+                        "source-layer": "boundaries",
+                        filter: ["==", "kind", "region"],
+                        paint: {
+                          "line-color": regionBorderColor,
+                          "line-width": regionBorderWidth,
+                          ...(regionDashline && {"line-dasharray": [2, 3]}),
+                        },
+                      } satisfies maplibregl.LayerSpecification,
+                    ]
+                    : []),
+                ],
+              }}
+              initialViewState={{
+                longitude: 2.213749,
+                latitude: 46.227638,
+                zoom: 5,
+              }}
+              mapLib={maplibregl}
+              onClick={(e) => {
+                console.log(e);
+              }}
             >
-                {/* <Layer
-                    id={OVERLAY_LAYER}
-                    type="fill"
-                    source={OVERLAY_SOURCE}
-                    source-layer={OVERLAY_SOURCE}
-                    paint={{
-                        'fill-color': '#088',
-                        'fill-opacity': [
-                            'case',
-                            ['boolean', ['feature-state', 'hover'], false],
-                            0.8,
-                            0.2
-                        ]
-                    }}
-                /> */}
-                <Layer
-                  id={OVERLAY_LAYER}
-                  type="fill"
-                  source={OVERLAY_SOURCE}
-                  source-layer={OVERLAY_SOURCE}
-                  paint={{
-                    'fill-color': matchExpression as maplibregl.ExpressionSpecification,
-                    'fill-opacity': 0.8
-                  }}
-                />
+              <Layer
+                id={OVERLAY_LAYER}
+                type="fill"
+                source={OVERLAY_SOURCE}
+                source-layer={OVERLAY_SOURCE}
+                paint={{
+                'fill-color': matchExpression as maplibregl.ExpressionSpecification,
+                'fill-opacity': [
+                  'case',
+                  ['boolean', ['feature-state', 'hover'], false],
+                  0.9,
+                  0.6
+                ]
+                }}
+              />
             </ReactMapGl>
             
             {/* TODO: remove this once the design decision is made */}
