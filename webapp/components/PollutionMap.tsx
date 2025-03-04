@@ -15,7 +15,7 @@ export default function PollutionMap() {
   const [selectedFeature, setSelectedFeature] = useState(null);
 
   return (
-    <div className="relative w-full h-[90vh]">
+    <div className="relative w-full h-full flex flex-col">
       <PollutionMapBaseLayer
         year={year}
         categoryType={categoryType}
