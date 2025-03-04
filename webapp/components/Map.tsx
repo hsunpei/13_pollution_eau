@@ -16,7 +16,7 @@ const OVERLAY_SOURCE = "communes";
 const OVERLAY_LAYER = "communes-layer";
 
 interface MapProps {
-  pollutionData: Map<string, Prelevement>;
+  pollutionData: Record<string, Prelevement>;
 }
 
 export default function Map({ pollutionData }: MapProps) {
