@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
+import clsx from "clsx";
 
 export const ResizableWrapper = ({
   children,
@@ -60,9 +61,12 @@ export const ResizableWrapper = ({
 
   return (
     <div
-      className={`absolute top-2.5 left-2.5 p-2.5 bg-gray-100 bg-opacity-80 border border-gray-300 rounded ${isResizing ? "select-none" : ""}`}
+      className={clsx(
+        "absolute top-2.5 left-2.5 p-2.5 bg-gray-100 bg-opacity-80 border border-gray-300 rounded",
+        { "select-none": isResizing },
+      )}
       ref={containerRef}
-      style={{ width: dimensions.width, height: dimensions.height }}
+      style={dimensions}
     >
       {children}
       <div
