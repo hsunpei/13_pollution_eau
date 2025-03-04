@@ -6,13 +6,22 @@ import path from "path";
 import { Prelevement } from "@/types/prelevement";
 
 export default async function Home() {
-  const filePath = path.join(process.cwd(), "public", "commune-prelevement.csv");
+  const filePath = path.join(
+    process.cwd(),
+    "public",
+    "commune-prelevement.csv",
+  );
   const fileContent = fs.readFileSync(filePath, "utf-8");
-  const parsedData = Papa.parse<Prelevement>(fileContent, { header: true }).data;
-  const dataById = parsedData.reduce((acc: Record<string, Prelevement>, item) => {
-    acc[item.id] = item;
-    return acc;
-  }, {} satisfies Record<string, Prelevement>);
+  const parsedData = Papa.parse<Prelevement>(fileContent, {
+    header: true,
+  }).data;
+  const dataById = parsedData.reduce(
+    (acc: Record<string, Prelevement>, item) => {
+      acc[item.id] = item;
+      return acc;
+    },
+    {} satisfies Record<string, Prelevement>,
+  );
 
   return (
     <div className="flex flex-col min-h-screen">
