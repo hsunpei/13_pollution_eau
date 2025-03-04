@@ -1,5 +1,5 @@
 //import Image from "next/image";
-import Map from "@/components/Map";
+import PollutionMap from "@/components/PollutionMap";
 
 export default function Home() {
   return (
@@ -11,12 +11,8 @@ export default function Home() {
       </header>
 
       <main className="flex-1">
-        <Map />
+        <PollutionMap />
       </main>
-
-      <footer className="p-4 bg-gray-100 text-center text-sm">
-        <p>Données ouvertes sur la qualité de l&apos;eau en France</p>
-      </footer>
     </div>
   );
 }
