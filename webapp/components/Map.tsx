@@ -60,9 +60,13 @@ export default function Map() {
             paint: {
               "fill-color": [
                 "case",
-                [">", ["to-number", ["get", "commune_code_insee"]], 30000],
-                "#ff0000", // Red for commune_code_insee > 30000
-                "#00ff00", // Green for commune_code_insee <= 30000
+                ["==", ["get", "resultat_cvm_2020"], "conforme"],
+                "#00ff00", // Green for "conforme"
+                ["==", ["get", "resultat_cvm_2020"], "non analysé"],
+                "#808080", // Grey for "non analysé"
+                ["==", ["get", "resultat_cvm_2020"], "non conforme"],
+                "#ff0000", // Red for "non conforme"
+                "#808080", // Default color (grey) for any other value
               ],
               "fill-opacity": 0.5,
             },
