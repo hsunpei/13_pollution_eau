@@ -144,7 +144,7 @@ export default function Map({ pollutionData }: MapProps) {
   const matchExpression = useMemo(() => {
     const expression = ["match", ["get", "commune_code_insee"]];
     for (const [communeId, value] of Object.entries(pollutionData)) {
-      const color = getRegionColor(value[year]);
+      const color = getRegionColor(value[year as keyof Prelevement]);
       expression.push(communeId, color);
     }
     // Last value is the default, used where there is no data
