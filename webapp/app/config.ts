@@ -24,11 +24,15 @@ export const DEFAULT_MAP_STYLE: maplibregl.StyleSpecification = {
     "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
   sprite: "https://protomaps.github.io/basemaps-assets/sprites/v4/light",
   sources: {
-    ["protomaps" as string]: {
-      type: "vector" as const,
+    protomaps: {
+      type: "vector",
       maxzoom: MAPLIBRE_MAP.protomaps.maxzoom,
       url: `https://api.protomaps.com/tiles/v4.json?key=${MAPLIBRE_MAP.protomaps.api_key}`,
       attribution: '<a href="https://osm.org/copyright">© OpenStreetMap</a>',
+    },
+    polluants: {
+      type: "vector",
+      url: "pmtiles://s3/upload/datacommunes.pmtiles",
     },
   },
   layers: [], // layers will be added dynamically in the Map component
