@@ -1,5 +1,5 @@
 "use client";;
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import ReactMapGl, { MapRef } from "react-map-gl/maplibre";
 import { GeoJsonLayer } from "@deck.gl/layers";
@@ -150,37 +150,45 @@ export default function Map({pollutionData}: MapProps) {
     }
   }, []);
 
-  const deckLayers = [
-    new TileLayer({
-      id: OVERLAY_LAYER,
-      getTileData: tileSource && tileSource.getTileData,
-      maxRequests: 20,
-      pickable: true,
-      autoHighlight: true,
-      renderSubLayers: (props) => {
-        return new GeoJsonLayer({
-          id: `${props.id}-geojson`,
-          data: props.data as GeoJSON.FeatureCollection,
-          getFillColor: (d) => {
-            const communeCode = d.properties.commune_code_insee;
-            const prelevement = pollutionData[communeCode] as Prelevement;
-            return getRegionColor(prelevement[year as keyof Prelevement]);
-          },
-          lineWidthMinPixels: 1,
-          stroked: false,
-          pickable: true,
-          autoHighlight: true,
-          onHover: ({ object }) => {
-            if (object) {
-              hoveredElementRef.current = object.properties.commune_code_insee;
-            } else {
-              hoveredElementRef.current = undefined;
-            }
-          },
-        });
-      },
-    }),
-  ];
+  const deckLayers = useMemo(() => {
+    const updateTriggers = {
+      getFillColor: [year],
+    };
+
+    return [
+      new TileLayer({
+        id: OVERLAY_LAYER,
+        getTileData: tileSource && tileSource.getTileData,
+        maxRequests: 20,
+        pickable: true,
+        autoHighlight: true,
+        renderSubLayers: (props) => {
+          return new GeoJsonLayer({
+            id: `${props.id}-geojson`,
+            data: props.data as GeoJSON.FeatureCollection,
+            getFillColor: (d) => {
+              const communeCode = d.properties.commune_code_insee;
+              const prelevement = pollutionData[communeCode] as Prelevement;
+              return getRegionColor(prelevement[year as keyof Prelevement]);
+            },
+            lineWidthMinPixels: 1,
+            stroked: false,
+            pickable: true,
+            autoHighlight: true,
+            onHover: ({ object }) => {
+              if (object) {
+                hoveredElementRef.current = object.properties.commune_code_insee;
+              } else {
+                hoveredElementRef.current = undefined;
+              }
+            },
+            updateTriggers,
+          });
+        },
+        updateTriggers,
+      }),
+    ]
+  }, [tileSource, year, pollutionData]);
 
   return (
     <>
