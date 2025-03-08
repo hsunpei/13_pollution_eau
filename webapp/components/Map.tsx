@@ -1,4 +1,4 @@
-"use client";
+"use client";;
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import ReactMapGl, { MapRef } from "react-map-gl/maplibre";
@@ -9,15 +9,20 @@ import { Protocol } from "pmtiles";
 import layers from "protomaps-themes-base";
 import { Leva, useControls } from "leva";
 import { DeckGLOverlay } from "./DeckGLOverlay";
-import { load } from "@loaders.gl/core";
 import { PMTilesSource } from "@loaders.gl/pmtiles";
-import { MVTLayer, TileLayer } from "@deck.gl/geo-layers";
+import { TileLayer } from "@deck.gl/geo-layers";
+import { Prelevement } from "@/types/prelevement";
+import { getRegionColor } from "@/utils/getRegionColor";
 
 const SOURCE = "protomaps";
 const OVERLAY_SOURCE = "communes";
 const OVERLAY_LAYER = "communes-layer";
 
-export default function Map() {
+interface MapProps {
+  pollutionData: Record<string, Prelevement>;
+}
+
+export default function Map({pollutionData}: MapProps) {
   const mapRef = useRef<MapRef>(null);
   const hoveredElementRef = useRef<number | string | undefined>(undefined);
   const [tileSource] = useState<PMTilesSource | null>(() => {
@@ -30,6 +35,7 @@ export default function Map() {
   // controls from Leva is a library for adding a GUI to help us try out different styles.
   // we're going to discard it once designers make a decision on the map style
   const {
+    year,
     theme,
     language,
     customizeCountryBorders,
@@ -40,6 +46,10 @@ export default function Map() {
     regionBorderColor,
     regionDashline,
   } = useControls({
+    year: {
+      options: ["2020", "2021", "2022", "2023", "2024"],
+      value: "2024",
+    },
     theme: {
       options: ["light", "dark", "white", "grayscale", "black"],
       value: "white",
@@ -144,22 +154,22 @@ export default function Map() {
     new TileLayer({
       id: OVERLAY_LAYER,
       getTileData: tileSource && tileSource.getTileData,
-      minZoom: 0,
-      maxZoom: 15,
-      tileSize: 512,
+      maxRequests: 20,
+      pickable: true,
+      autoHighlight: true,
       renderSubLayers: (props) => {
         return new GeoJsonLayer({
           id: `${props.id}-geojson`,
           data: props.data as GeoJSON.FeatureCollection,
-          filled: true,
-          getFillColor: (d) =>
-            d.properties.pollution === "N" ? [255, 0, 0] : [0, 255, 0],
-          stroked: true,
-          getLineColor: [0, 0, 0],
+          getFillColor: (d) => {
+            const communeCode = d.properties.commune_code_insee;
+            const prelevement = pollutionData[communeCode] as Prelevement;
+            return getRegionColor(prelevement[year as keyof Prelevement]);
+          },
           lineWidthMinPixels: 1,
+          stroked: false,
           pickable: true,
           autoHighlight: true,
-          highlightColor: [8, 136, 136, 255],
           onHover: ({ object }) => {
             if (object) {
               hoveredElementRef.current = object.properties.commune_code_insee;
@@ -191,12 +201,6 @@ export default function Map() {
               url: "https://api.protomaps.com/tiles/v4.json?key=707d8bc70b393fc0",
               attribution:
                 '<a href="https://osm.org/copyright">© OpenStreetMap</a>',
-            },
-            [OVERLAY_SOURCE]: {
-              type: "vector",
-              url: "pmtiles://communes.pmtiles",
-              // set the feature id as the commune code
-              promoteId: "commune_code_insee",
             },
           },
           layers: [
