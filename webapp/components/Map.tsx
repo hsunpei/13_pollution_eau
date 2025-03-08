@@ -1,15 +1,14 @@
-"use client";
-
+"use client";;
 import {useCallback, useEffect, useRef} from "react";
 
-import ReactMapGl, {MapRef} from "react-map-gl/maplibre";
-import { DeckGL } from "@deck.gl/react";
+import ReactMapGl, { MapRef } from "react-map-gl/maplibre";
 import { GeoJsonLayer } from "@deck.gl/layers";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import {Protocol} from "pmtiles";
 import layers from "protomaps-themes-base";
 import {Leva, useControls} from "leva";
+import { DeckGLOverlay } from "./DeckGLOverlay";
 
 const SOURCE = "protomaps";
 const OVERLAY_SOURCE = "communes";
@@ -118,6 +117,25 @@ export default function Map() {
         }
     }, []);
 
+    const deckLayers = [
+      new GeoJsonLayer({
+        id: OVERLAY_LAYER,
+        data: "georef-france-commune-prelevement.geojson",
+        filled: true,
+        getFillColor: [8, 136, 136, 128],
+        pickable: true,
+        autoHighlight: true,
+        highlightColor: [8, 136, 136, 255],
+        onHover: ({object}) => {
+          if (object) {
+            hoveredElementRef.current = object.properties.commune_code_insee;
+          } else {
+            hoveredElementRef.current = undefined;
+          }
+        },
+      })
+    ];
+
     return (
         <>
             <ReactMapGl
@@ -196,25 +214,8 @@ export default function Map() {
                 console.log(e);
               }}
             >
-              <DeckGL
-                layers={[
-                  new GeoJsonLayer({
-                    id: OVERLAY_LAYER,
-                    data: "georef-france-commune-prelevement.geojson",
-                    filled: true,
-                    getFillColor: [8, 136, 136, 128],
-                    pickable: true,
-                    autoHighlight: true,
-                    highlightColor: [8, 136, 136, 255],
-                    onHover: ({object}) => {
-                      if (object) {
-                        hoveredElementRef.current = object.properties.commune_code_insee;
-                      } else {
-                        hoveredElementRef.current = undefined;
-                      }
-                    },
-                  }),
-                ]}
+              <DeckGLOverlay
+                layers={deckLayers}
                 getTooltip={({object}) => object && `Commune: ${object.properties.commune_code_insee}`}
               />
             </ReactMapGl>
