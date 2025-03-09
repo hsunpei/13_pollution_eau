@@ -1,5 +1,6 @@
 "use client";;
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {ClipExtension} from '@deck.gl/extensions';
 
 import ReactMapGl, { MapRef } from "react-map-gl/maplibre";
 import { GeoJsonLayer } from "@deck.gl/layers";
@@ -163,6 +164,8 @@ export default function Map({pollutionData}: MapProps) {
         pickable: true,
         autoHighlight: true,
         renderSubLayers: (props) => {
+          const {west, south, east, north} = props.tile.bbox;
+
           return new GeoJsonLayer({
             id: `${props.id}-geojson`,
             data: props.data as GeoJSON.FeatureCollection,
@@ -182,9 +185,14 @@ export default function Map({pollutionData}: MapProps) {
                 hoveredElementRef.current = undefined;
               }
             },
+            // force update the layer data changes
             updateTriggers,
+            // avoid the overlapping grid lines show up: https://qiita.com/northprint/items/a255e74fc771a7d8b995
+            extensions: [new ClipExtension()],
+            clipBounds: [west, south, east, north],
           });
         },
+        // force update the layer data changes
         updateTriggers,
       }),
     ]
@@ -265,7 +273,7 @@ export default function Map({pollutionData}: MapProps) {
         <DeckGLOverlay
           layers={deckLayers}
           getTooltip={({ object }) =>
-            object && `Commune: ${object.properties.commune_code_insee}`
+        object && `Commune: ${object.properties.commune_code_insee}`
           }
         />
       </ReactMapGl>
