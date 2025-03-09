@@ -153,7 +153,7 @@ export default function Map({pollutionData}: MapProps) {
 
   const deckLayers = useMemo(() => {
     const updateTriggers = {
-      getFillColor: [year],
+      getFillColor: [year, hoveredElementRef.current],
     };
 
     return [
@@ -162,7 +162,7 @@ export default function Map({pollutionData}: MapProps) {
         getTileData: tileSource && tileSource.getTileData,
         maxRequests: 20,
         pickable: true,
-        autoHighlight: true,
+        // autoHighlight: true,
         renderSubLayers: (props) => {
           const {west, south, east, north} = props.tile.bbox;
 
@@ -172,25 +172,34 @@ export default function Map({pollutionData}: MapProps) {
             getFillColor: (d) => {
               const communeCode = d.properties.commune_code_insee;
               const prelevement = pollutionData[communeCode] as Prelevement;
+              console.log("communeCode", communeCode);
+              if (communeCode === hoveredElementRef.current) {
+                return [255, 255, 255, 255];
+              }
+
               return getRegionColor(prelevement[year as keyof Prelevement]);
             },
             lineWidthMinPixels: 1,
             stroked: false,
             pickable: true,
-            autoHighlight: true,
-            onHover: ({ object }) => {
-              if (object) {
-                hoveredElementRef.current = object.properties.commune_code_insee;
-              } else {
-                hoveredElementRef.current = undefined;
-              }
-            },
+            // autoHighlight: true,
             // force update the layer data changes
             updateTriggers,
             // avoid the overlapping grid lines show up: https://qiita.com/northprint/items/a255e74fc771a7d8b995
             extensions: [new ClipExtension()],
             clipBounds: [west, south, east, north],
           });
+        },
+        onHover: ({ object }) => {
+          if (object) {
+            hoveredElementRef.current = object.properties.commune_code_insee;
+            console.log("hoveredElementRef.current", hoveredElementRef.current);
+          } else {
+            hoveredElementRef.current = undefined;
+          }
+        },
+        onClick: (info) => {
+          console.log("onClick info", info);
         },
         // force update the layer data changes
         updateTriggers,
