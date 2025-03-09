@@ -23,9 +23,9 @@ interface MapProps {
   pollutionData: Record<string, Prelevement>;
 }
 
-export default function Map({pollutionData}: MapProps) {
+export default function Map({ pollutionData }: MapProps) {
   const mapRef = useRef<MapRef>(null);
-  const hoveredElementRef = useRef<number | string | undefined>(undefined);
+  const [hoveredElement, setHoveredElement] = useState<number | string | undefined>(undefined);
   const [tileSource] = useState<PMTilesSource | null>(() => {
     const source = new PMTilesSource({
       url: "communes.pmtiles",
@@ -97,63 +97,9 @@ export default function Map({pollutionData}: MapProps) {
     };
   }, []);
 
-  const onMapLoad = useCallback(() => {
-    const map = mapRef.current;
-
-    if (map) {
-      map.on("mousemove", OVERLAY_LAYER, (e) => {
-        if (e.features && e.features.length > 0) {
-          console.log("e.features", e.features);
-
-          if (
-            hoveredElementRef.current !== null &&
-            typeof hoveredElementRef.current !== "undefined"
-          ) {
-            // clear previous hovered state
-            map.setFeatureState(
-              {
-                source: OVERLAY_SOURCE,
-                id: hoveredElementRef.current,
-                sourceLayer: OVERLAY_SOURCE,
-              },
-              { hover: false },
-            );
-          }
-          const hoveredId = e.features[0].id;
-          if (typeof hoveredId !== "undefined") {
-            hoveredElementRef.current = hoveredId;
-            map.setFeatureState(
-              {
-                source: OVERLAY_SOURCE,
-                id: hoveredId,
-                sourceLayer: OVERLAY_SOURCE,
-              },
-              { hover: true },
-            );
-          }
-        }
-      });
-
-      map.on("mouseleave", OVERLAY_LAYER, () => {
-        if (typeof hoveredElementRef.current !== "undefined") {
-          // clear previous hovered state
-          map.setFeatureState(
-            {
-              source: OVERLAY_SOURCE,
-              id: hoveredElementRef.current,
-              sourceLayer: OVERLAY_SOURCE,
-            },
-            { hover: false },
-          );
-          hoveredElementRef.current = undefined;
-        }
-      });
-    }
-  }, []);
-
   const deckLayers = useMemo(() => {
     const updateTriggers = {
-      getFillColor: [year, hoveredElementRef.current],
+      getFillColor: [year, hoveredElement],
     };
 
     return [
@@ -164,7 +110,7 @@ export default function Map({pollutionData}: MapProps) {
         pickable: true,
         // autoHighlight: true,
         renderSubLayers: (props) => {
-          const {west, south, east, north} = props.tile.bbox;
+          const { west, south, east, north } = props.tile.bbox;
 
           return new GeoJsonLayer({
             id: `${props.id}-geojson`,
@@ -172,9 +118,8 @@ export default function Map({pollutionData}: MapProps) {
             getFillColor: (d) => {
               const communeCode = d.properties.commune_code_insee;
               const prelevement = pollutionData[communeCode] as Prelevement;
-              console.log("communeCode", communeCode);
-              if (communeCode === hoveredElementRef.current) {
-                return [255, 255, 255, 255];
+              if (communeCode === hoveredElement) {
+                return [100, 255, 100, 255];
               }
 
               return getRegionColor(prelevement[year as keyof Prelevement]);
@@ -192,10 +137,10 @@ export default function Map({pollutionData}: MapProps) {
         },
         onHover: ({ object }) => {
           if (object) {
-            hoveredElementRef.current = object.properties.commune_code_insee;
-            console.log("hoveredElementRef.current", hoveredElementRef.current);
+            setHoveredElement(object.properties.commune_code_insee);
+            console.log("hoveredElement", object.properties.commune_code_insee);
           } else {
-            hoveredElementRef.current = undefined;
+            setHoveredElement(undefined);
           }
         },
         onClick: (info) => {
@@ -204,14 +149,13 @@ export default function Map({pollutionData}: MapProps) {
         // force update the layer data changes
         updateTriggers,
       }),
-    ]
-  }, [tileSource, year, pollutionData]);
+    ];
+  }, [tileSource, year, pollutionData, hoveredElement]);
 
   return (
     <>
       <ReactMapGl
         ref={mapRef}
-        onLoad={onMapLoad}
         style={{ width: "100%", height: "90vh" }}
         mapStyle={{
           version: 8,
@@ -275,14 +219,11 @@ export default function Map({pollutionData}: MapProps) {
           zoom: 5,
         }}
         mapLib={maplibregl}
-        onClick={(e) => {
-          console.log(e);
-        }}
       >
         <DeckGLOverlay
           layers={deckLayers}
           getTooltip={({ object }) =>
-        object && `Commune: ${object.properties.commune_code_insee}`
+            object && `Commune: ${object.properties.commune_code_insee}`
           }
         />
       </ReactMapGl>
