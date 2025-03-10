@@ -1,5 +1,5 @@
 "use client";;
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {ClipExtension} from '@deck.gl/extensions';
 
 import ReactMapGl, { MapRef } from "react-map-gl/maplibre";
@@ -11,7 +11,7 @@ import layers from "protomaps-themes-base";
 import { Leva, useControls } from "leva";
 import { DeckGLOverlay } from "./DeckGLOverlay";
 import { PMTilesSource } from "@loaders.gl/pmtiles";
-import { TileLayer } from "@deck.gl/geo-layers";
+import { GeoBoundingBox, TileLayer } from "@deck.gl/geo-layers";
 import { Prelevement } from "@/types/prelevement";
 import { getRegionColor } from "@/utils/getRegionColor";
 
@@ -108,27 +108,20 @@ export default function Map({ pollutionData }: MapProps) {
         getTileData: tileSource && tileSource.getTileData,
         maxRequests: 20,
         pickable: true,
-        // autoHighlight: true,
         renderSubLayers: (props) => {
-          const { west, south, east, north } = props.tile.bbox;
-
+          const { west, south, east, north } = props.tile.bbox as GeoBoundingBox;
           return new GeoJsonLayer({
             id: `${props.id}-geojson`,
             data: props.data as GeoJSON.FeatureCollection,
             getFillColor: (d) => {
               const communeCode = d.properties.commune_code_insee;
               const prelevement = pollutionData[communeCode] as Prelevement;
-              if (communeCode === hoveredElement) {
-                return [100, 255, 100, 255];
-              }
-
-              return getRegionColor(prelevement[year as keyof Prelevement]);
+              const isHovered = communeCode === hoveredElement;
+              return getRegionColor(prelevement[year as keyof Prelevement], isHovered);
             },
             lineWidthMinPixels: 1,
             stroked: false,
             pickable: true,
-            // autoHighlight: true,
-            // force update the layer data changes
             updateTriggers,
             // avoid the overlapping grid lines show up: https://qiita.com/northprint/items/a255e74fc771a7d8b995
             extensions: [new ClipExtension()],
@@ -138,13 +131,12 @@ export default function Map({ pollutionData }: MapProps) {
         onHover: ({ object }) => {
           if (object) {
             setHoveredElement(object.properties.commune_code_insee);
-            console.log("hoveredElement", object.properties.commune_code_insee);
           } else {
             setHoveredElement(undefined);
           }
         },
-        onClick: (info) => {
-          console.log("onClick info", info);
+        onClick: ({ object }) => {
+          console.log("onClick commune ID", object.properties.commune_code_insee);
         },
         // force update the layer data changes
         updateTriggers,

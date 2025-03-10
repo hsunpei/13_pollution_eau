@@ -1,9 +1,9 @@
-export function getRegionColor(sampleResult: string): [number, number, number, number] {
+export function getRegionColor(sampleResult: string, isHovered: boolean): [number, number, number, number] {
     switch (sampleResult) {
       case "N":
-        return [254, 110, 115, 200];
-          case "C":
-        return [103, 163, 83, 200];
+        return isHovered ? [254, 110, 115, 230] : [254, 110, 115, 150];
+      case "C":
+        return isHovered ? [103, 163, 83, 230] : [103, 163, 83, 150];
       default:
         return [0, 0, 0, 0];
     }
