@@ -1,6 +1,6 @@
-"use client";;
+"use client";
 import { useEffect, useMemo, useRef, useState } from "react";
-import {ClipExtension} from '@deck.gl/extensions';
+import { ClipExtension } from "@deck.gl/extensions";
 
 import ReactMapGl, { MapRef } from "react-map-gl/maplibre";
 import { GeoJsonLayer } from "@deck.gl/layers";
@@ -25,7 +25,9 @@ interface MapProps {
 
 export default function Map({ pollutionData }: MapProps) {
   const mapRef = useRef<MapRef>(null);
-  const [hoveredElement, setHoveredElement] = useState<number | string | undefined>(undefined);
+  const [hoveredElement, setHoveredElement] = useState<
+    number | string | undefined
+  >(undefined);
   const [tileSource] = useState<PMTilesSource | null>(() => {
     const source = new PMTilesSource({
       url: "communes.pmtiles",
@@ -109,7 +111,8 @@ export default function Map({ pollutionData }: MapProps) {
         maxRequests: 20,
         pickable: true,
         renderSubLayers: (props) => {
-          const { west, south, east, north } = props.tile.bbox as GeoBoundingBox;
+          const { west, south, east, north } = props.tile
+            .bbox as GeoBoundingBox;
           return new GeoJsonLayer({
             id: `${props.id}-geojson`,
             data: props.data as GeoJSON.FeatureCollection,
@@ -117,7 +120,10 @@ export default function Map({ pollutionData }: MapProps) {
               const communeCode = d.properties.commune_code_insee;
               const prelevement = pollutionData[communeCode] as Prelevement;
               const isHovered = communeCode === hoveredElement;
-              return getRegionColor(prelevement[year as keyof Prelevement], isHovered);
+              return getRegionColor(
+                prelevement[year as keyof Prelevement],
+                isHovered,
+              );
             },
             lineWidthMinPixels: 1,
             stroked: false,
@@ -136,7 +142,10 @@ export default function Map({ pollutionData }: MapProps) {
           }
         },
         onClick: ({ object }) => {
-          console.log("onClick commune ID", object.properties.commune_code_insee);
+          console.log(
+            "onClick commune ID",
+            object.properties.commune_code_insee,
+          );
         },
         // force update the layer data changes
         updateTriggers,
