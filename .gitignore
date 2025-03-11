@@ -21,6 +21,8 @@ dist/
 *.db
 *.duckdb
 *.csv
+# Exclude CSV files under the /webapp directory from the ignore rule
+!/webapp/**/*.csv
 *.parquet
 *.xlsx
 *.xls
