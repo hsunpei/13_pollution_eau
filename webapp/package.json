@@ -13,7 +13,7 @@
     "@deck.gl/layers": "^9.1.4",
     "@deck.gl/mapbox": "^9.1.4",
     "@deck.gl/react": "^9.1.4",
-    "@loaders.gl/core": "^4.3.3",
+    "@loaders.gl/core": "^4.0.4",
     "@loaders.gl/csv": "^4.3.3",
     "@loaders.gl/pmtiles": "4.0.4",
     "leva": "^0.10.0",
@@ -29,6 +29,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@types/node": "^20",
+    "@types/papaparse": "^5.3.15",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
