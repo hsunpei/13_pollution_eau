@@ -11,6 +11,7 @@ import { MapGeoJSONFeature } from "maplibre-gl";
 import { MAPLIBRE_MAP } from "@/app/config";
 import { MapProvider } from "react-map-gl/maplibre";
 import MapZoneSelector from "./MapZoneSelector";
+import PollutionMapLegend from "./PollutionMapLegend";
 
 export default function PollutionMap() {
   const [year, setYear] = useState("2024");
@@ -63,9 +64,10 @@ export default function PollutionMap() {
           <MapZoneSelector />
         </div>
 
-        {/* <div className="absolute bottom-6 right-4 z-10 bg-white p-3 rounded-lg shadow-lg">
-        <PollutionMapLegend categoryType={categoryType} />
-      </div> */}
+        <div className="absolute left-4 bottom-4">
+          {/* <PollutionMapLegend categoryType={categoryType} /> */}
+          <PollutionMapLegend categoryType={categoryType} />
+        </div>
 
         {featureDetails && (
           <PollutionMapDetailPanel
