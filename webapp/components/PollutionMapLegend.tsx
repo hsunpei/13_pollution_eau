@@ -26,15 +26,33 @@ export default function PollutionMapLegend({ onClose }: PollutionMapLegendProps)
     },
     {
       color: "bg-white border border-gray-300 border-dashed",
-      text: "Non recherchés"
+      text: "Non recherchés",
+      isSlashed: true
     }
   ];
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6 max-w-md">
+    <div className="bg-white rounded-lg shadow-lg p-6 max-w-md transform transition-all">
+      <style jsx>{`
+        .slashed-background {
+          background-image: linear-gradient(135deg, 
+            transparent 46%, 
+            #9CA3AF 46%, 
+            #9CA3AF 54%, 
+            transparent 54%
+          );
+          background-size: 8px 8px;
+          border: 1px solid #9CA3AF;
+        }
+      `}</style>
+
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">PFAS</h2>
-        <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+        <button
+          onClick={onClose}
+          className="text-gray-500 hover:text-gray-700 transition-colors duration-200"
+          aria-label="Close legend"
+        >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -43,14 +61,20 @@ export default function PollutionMapLegend({ onClose }: PollutionMapLegendProps)
 
       <div className="space-y-3">
         {legendItems.map((item, index) => (
-          <div key={index} className="flex items-start gap-3">
-            <div className={`w-6 h-6 flex-shrink-0 rounded ${item.color} mt-1`}></div>
-            <span className="text-gray-700">{item.text}</span>
+          <div
+            key={index}
+            className="flex items-start gap-3"
+          >
+            <div
+              className={`w-7 h-5 flex-shrink-0 ${item.color} mt-1 ${item.isSlashed ? 'slashed-background' : ''
+                }`}
+            ></div>
+            <span className="text-gray-900">{item.text}</span>
           </div>
         ))}
       </div>
 
-      <p className="text-gray-600 mt-4">
+      <p className="text-gray-500 mt-4">
         Lorem ipsum dolor sit amet consectetur. Eget porta mauris mattis venenatis.
       </p>
     </div>
