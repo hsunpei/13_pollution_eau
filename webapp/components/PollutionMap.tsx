@@ -25,6 +25,8 @@ export default function PollutionMap() {
   const [featureDetails, setFeatureDetails] =
     useState<MapGeoJSONFeature | null>(null);
 
+  const [showLegend, setShowLegend] = useState(true);
+
   const handleCommuneSelect = (result: CommuneFilterResult | null) => {
     if (result) {
       const { center, zoom, communeInseeCode } = result;
@@ -64,10 +66,12 @@ export default function PollutionMap() {
           <MapZoneSelector />
         </div>
 
-        <div className="absolute left-4 bottom-4">
-          {/* <PollutionMapLegend categoryType={categoryType} /> */}
-          <PollutionMapLegend categoryType={categoryType} />
-        </div>
+        {showLegend && (
+          <div className="absolute left-4 bottom-4">
+            {/* <PollutionMapLegend categoryType={categoryType} /> */}
+            <PollutionMapLegend onClose={() => setShowLegend(false)} />
+          </div>
+        )}
 
         {featureDetails && (
           <PollutionMapDetailPanel
