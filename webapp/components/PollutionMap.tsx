@@ -68,8 +68,7 @@ export default function PollutionMap() {
 
         {showLegend && (
           <div className="absolute left-4 bottom-4">
-            {/* <PollutionMapLegend categoryType={categoryType} /> */}
-            <PollutionMapLegend onClose={() => setShowLegend(false)} />
+            <PollutionMapLegend categoryType={categoryType} onClose={() => setShowLegend(false)} />
           </div>
         )}
 

@@ -1,35 +1,13 @@
+import { categoryNameMapping, legendColors } from '../lib/legendColors';
+
 interface PollutionMapLegendProps {
   onClose: () => void;
+  categoryType: string;
 }
 
-export default function PollutionMapLegend({ onClose }: PollutionMapLegendProps) {
-  const legendItems = [
-    {
-      color: "bg-red-400",
-      text: "Au moins 1 PFAS > valeur sanitaire"
-    },
-    {
-      color: "bg-orange-400",
-      text: "Somme des 20 PFAS > 0,1 μg/L"
-    },
-    {
-      color: "bg-yellow-300",
-      text: "Sommes des 20 PFAS < 0,1 μg/L et la somme des 4 PFAS (PFOA, PFOS, PFNA, PFHxS) > 0.02 μg/L"
-    },
-    {
-      color: "bg-green-300",
-      text: "Au moins 1 paramètre a été quantifié mais la somme des 20 PFAS < 0,1 μg/L et la sommes des 4 PFAS < 0,02 μg/L"
-    },
-    {
-      color: "bg-gray-300",
-      text: "Aucun paramètre n'a été quantifié"
-    },
-    {
-      color: "bg-white border border-gray-300 border-dashed",
-      text: "Non recherchés",
-      isSlashed: true
-    }
-  ];
+export default function PollutionMapLegend({ onClose, categoryType }: PollutionMapLegendProps) {
+  const currentCategory = categoryNameMapping[categoryType as keyof typeof categoryNameMapping];
+  const filteredLegendItems = legendColors.filter(item => item.category === currentCategory);
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6 max-w-md transform transition-all">
@@ -47,7 +25,7 @@ export default function PollutionMapLegend({ onClose }: PollutionMapLegendProps)
       `}</style>
 
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">PFAS</h2>
+        <h2 className="text-xl font-semibold text-gray-900">{currentCategory}</h2>
         <button
           onClick={onClose}
           className="text-gray-500 hover:text-gray-700 transition-colors duration-200"
@@ -60,16 +38,16 @@ export default function PollutionMapLegend({ onClose }: PollutionMapLegendProps)
       </div>
 
       <div className="space-y-3">
-        {legendItems.map((item, index) => (
+        {filteredLegendItems.map((item, index) => (
           <div
             key={index}
             className="flex items-start gap-3"
           >
             <div
-              className={`w-7 h-5 flex-shrink-0 ${item.color} mt-1 ${item.isSlashed ? 'slashed-background' : ''
-                }`}
+              className={`w-6 h-4 flex-shrink-0 mt-1 ${item.color === 'hachuré' ? 'slashed-background' : ''}`}
+              style={{ backgroundColor: item.color === 'hachuré' ? undefined : item.color || undefined }}
             ></div>
-            <span className="text-gray-900">{item.text}</span>
+            <span className="text-gray-900">{item.label}</span>
           </div>
         ))}
       </div>
