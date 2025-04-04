@@ -1,51 +1,73 @@
-import { categoryNameMapping, legendColors } from '../lib/legendColors';
+import { categoryNameMapping, legendColors } from "../lib/legendColors";
 
 interface PollutionMapLegendProps {
   onClose: () => void;
-  categoryType: string;
+  category: string;
 }
 
-export default function PollutionMapLegend({ onClose, categoryType }: PollutionMapLegendProps) {
-  const currentCategory = categoryNameMapping[categoryType as keyof typeof categoryNameMapping];
-  const filteredLegendItems = legendColors.filter(item => item.category === currentCategory);
+export default function PollutionMapLegend({
+  onClose,
+  category,
+}: PollutionMapLegendProps) {
+  const currentCategory =
+    categoryNameMapping[category as keyof typeof categoryNameMapping];
+  const filteredLegendItems = legendColors.filter(
+    (item) => item.category === currentCategory,
+  );
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6 max-w-md transform transition-all">
       <style jsx>{`
         .slashed-background {
-          background-image: linear-gradient(135deg, 
-            transparent 46%, 
-            #9CA3AF 46%, 
-            #9CA3AF 54%, 
+          background-image: linear-gradient(
+            135deg,
+            transparent 46%,
+            #9ca3af 46%,
+            #9ca3af 54%,
             transparent 54%
           );
           background-size: 8px 8px;
-          border: 1px solid #9CA3AF;
+          border: 1px solid #9ca3af;
         }
       `}</style>
 
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold text-gray-900">{currentCategory}</h2>
+        <h2 className="text-xl font-semibold text-gray-900">
+          {currentCategory}
+        </h2>
         <button
           onClick={onClose}
           className="text-gray-500 hover:text-gray-700 transition-colors duration-200"
           aria-label="Close legend"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       </div>
 
       <div className="space-y-3">
         {filteredLegendItems.map((item, index) => (
-          <div
-            key={index}
-            className="flex items-start gap-3"
-          >
+          <div key={index} className="flex items-start gap-3">
             <div
-              className={`w-6 h-4 flex-shrink-0 mt-1 ${item.color === 'hachuré' ? 'slashed-background' : ''}`}
-              style={{ backgroundColor: item.color === 'hachuré' ? undefined : item.color || undefined }}
+              className={`w-6 h-4 flex-shrink-0 mt-1 ${item.color === "hachuré" ? "slashed-background" : ""}`}
+              style={{
+                backgroundColor:
+                  item.color === "hachuré"
+                    ? undefined
+                    : item.color || undefined,
+              }}
             ></div>
             <span className="text-gray-900">{item.label}</span>
           </div>
@@ -53,8 +75,9 @@ export default function PollutionMapLegend({ onClose, categoryType }: PollutionM
       </div>
 
       <p className="text-gray-500 mt-4">
-        Lorem ipsum dolor sit amet consectetur. Eget porta mauris mattis venenatis.
+        Lorem ipsum dolor sit amet consectetur. Eget porta mauris mattis
+        venenatis.
       </p>
     </div>
   );
-};
+}
